@@ -5,7 +5,7 @@
         xmlns:cmd="http://www.galasoft.ch/mvvmlight"
         xmlns:converters="clr-namespace:Invadopodia.Converters"
         DataContext="{Binding Source={StaticResource Locator}, Path=ImageViewModel}"
-        Title="Selected Images" Height="540" Width="1420">
+        Title="Selected Images" Height="270" Width="700">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -19,58 +19,69 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <ItemsControl Grid.Row="0" Grid.Column="0" ItemsSource="{Binding SelectedImageGroup.Rectangles}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas MinHeight="260" MinWidth="348" MaxWidth="{Binding SelectedImageGroup.ImageFirst.PixelWidth}" MaxHeight="{Binding SelectedImageGroup.ImageFirst.PixelHeight}" x:Name="canvas" IsItemsHost="True">
+                            <Canvas.Background>
+                                <ImageBrush ImageSource="{Binding SelectedImageGroup.ImageFirst}"/>
+                            </Canvas.Background>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDown">
+                                    <cmd:EventToCommand Command="{Binding MouseDownCommand}" EventArgsConverter="{StaticResource MouseButtonEventArgsToPointConverter}" EventArgsConverterParameter="{Binding ElementName=canvas}" PassEventArgsToCommand="True" />
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="MouseUp">
+                                    <cmd:EventToCommand Command="{Binding MouseUpCommand}" EventArgsConverter="{StaticResource MouseButtonEventArgsToPointConverter}" EventArgsConverterParameter="{Binding ElementName=canvas}" PassEventArgsToCommand="True" />
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="MouseMove">
+                                    <cmd:EventToCommand Command="{Binding MouseMoveCommand}" EventArgsConverter="{StaticResource MouseEventArgsToPointConverter}" EventArgsConverterParameter="{Binding ElementName=canvas}" PassEventArgsToCommand="True" />
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="SizeChanged">
+                                    <cmd:EventToCommand Command="{Binding ResizeCanvasCommand}" PassEventArgsToCommand="True" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Canvas>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemContainerStyle>
+                    <Style>
+                        <Setter Property="Canvas.Left" Value="{Binding X}" />
+                        <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="Pink" BorderThickness="3" Width="{Binding Width}" Height="{Binding Height}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-        <Image Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}" Grid.Column="0" Source="{Binding SelectedImageGroup.ImageFirst}" />
-        <ItemsControl Grid.Column="0" ItemsSource="{Binding SelectedImageGroup.Rectangles}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas x:Name="canvas" Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}" Background="Transparent" IsItemsHost="True">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="MouseDown">
-                                <cmd:EventToCommand Command="{Binding MouseDownCommand}" EventArgsConverter="{StaticResource MouseButtonEventArgsToPointConverter}" EventArgsConverterParameter="{Binding ElementName=canvas}" PassEventArgsToCommand="True" />
-                            </i:EventTrigger>
-                            <i:EventTrigger EventName="MouseUp">
-                                <cmd:EventToCommand Command="{Binding MouseUpCommand}" EventArgsConverter="{StaticResource MouseButtonEventArgsToPointConverter}" EventArgsConverterParameter="{Binding ElementName=canvas}" PassEventArgsToCommand="True" />
-                            </i:EventTrigger>
-                            <i:EventTrigger EventName="MouseMove">
-                                <cmd:EventToCommand Command="{Binding MouseMoveCommand}" EventArgsConverter="{StaticResource MouseEventArgsToPointConverter}" EventArgsConverterParameter="{Binding ElementName=canvas}" PassEventArgsToCommand="True" />
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </Canvas>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemContainerStyle>
-                <Style>
-                    <Setter Property="Canvas.Left" Value="{Binding X}" />
-                    <Setter Property="Canvas.Top" Value="{Binding Y}" />
-                </Style>
-            </ItemsControl.ItemContainerStyle>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Border BorderBrush="Pink" BorderThickness="3" Width="{Binding Width}" Height="{Binding Height}" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-
-        <Image Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}" Grid.Column="1" Source="{Binding SelectedImageGroup.ImageSecond}" />
-        <ItemsControl Grid.Column="1" ItemsSource="{Binding SelectedImageGroup.Rectangles}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}" IsItemsHost="True" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemContainerStyle>
-                <Style>
-                    <Setter Property="Canvas.Left" Value="{Binding X}" />
-                    <Setter Property="Canvas.Top" Value="{Binding Y}" />
-                </Style>
-            </ItemsControl.ItemContainerStyle>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Border BorderBrush="Pink" BorderThickness="3" Width="{Binding Width}" Height="{Binding Height}" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <ItemsControl Grid.Row="0" Grid.Column="1" ItemsSource="{Binding SelectedImageGroup.Rectangles}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas MinHeight="260" MinWidth="348" MaxWidth="{Binding SelectedImageGroup.ImageSecond.PixelWidth}" MaxHeight="{Binding SelectedImageGroup.ImageSecond.PixelHeight}" IsItemsHost="True">
+                            <Canvas.Background>
+                                <ImageBrush ImageSource="{Binding SelectedImageGroup.ImageSecond}"/>
+                            </Canvas.Background>
+                        </Canvas>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemContainerStyle>
+                    <Style>
+                        <Setter Property="Canvas.Left" Value="{Binding X}" />
+                        <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="Pink" BorderThickness="3" Width="{Binding Width}" Height="{Binding Height}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
     </Grid>
 </Window>

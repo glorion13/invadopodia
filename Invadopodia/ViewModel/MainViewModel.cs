@@ -5,7 +5,9 @@ using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
+using WPFFolderBrowser;
 
 namespace Invadopodia.ViewModel
 {
@@ -73,11 +75,13 @@ namespace Invadopodia.ViewModel
         }
         private void ExecuteOpenFolderCommand()
         {
-            var dialog = new System.Windows.Forms.FolderBrowserDialog();
-            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
+            WPFFolderBrowserDialog dialog = new WPFFolderBrowserDialog();
+            dialog.Title = "Please select a directory.";
+
+            bool? result = dialog.ShowDialog();
+            if (result == true)
             {
-                ImageFolder = dialog.SelectedPath;
+                ImageFolder = dialog.FileName;
                 LoadImagesFromFolder(ImageFolder);
             }
         }
@@ -119,11 +123,19 @@ namespace Invadopodia.ViewModel
             string[] files = Directory.GetFiles(folder, "*.tif");
             for (int fileIndex = 0; fileIndex < files.Length - 1; fileIndex += 2)
             {
-                ImageGroup tmpGroup = new ImageGroup();
-                tmpGroup.ImageFirst = new BitmapImage(new System.Uri(files[fileIndex]));;
-                tmpGroup.ImageSecond = new BitmapImage(new System.Uri(files[fileIndex + 1]));;
-                tmpGroup.Index = (fileIndex / 2) + 1;
-                ImageList.Add(tmpGroup);
+                string firstFile = files[fileIndex].Contains("actin") ? files[fileIndex] : (files[fileIndex + 1].Contains("actin") ? files[fileIndex + 1] : null);
+                string secondFile = files[fileIndex].Contains("gelatin") ? files[fileIndex] : (files[fileIndex + 1].Contains("gelatin") ? files[fileIndex + 1] : null);
+                int index = (fileIndex / 2) + 1;
+                if (firstFile == null || secondFile == null)
+                {
+                    MessageBox.Show("The image structure in the selected folder does not match the requirements.");
+                    break;
+                }
+                else
+                {
+                    ImageGroup newImageGroup = new ImageGroup(firstFile, secondFile, index);
+                    ImageList.Add(newImageGroup);
+                }
             }
             if (ImageList.Count > 0)
                 SelectedImageGroup = ImageList[0];   

@@ -78,14 +78,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Invadopodia.exe" size="25088">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Invadopodia.exe" size="26624">
       <assemblyIdentity name="Invadopodia" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>d0Ot6oO45XcYQFpUoeBgaItIG3oI6fTCRUqDFTi4pEI=</dsig:DigestValue>
+        <dsig:DigestValue>pFO4GxfbUKXnfZtK7f9q9PKU9+tcxtCuMQEfUvZyWa4=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

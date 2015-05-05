@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,18 @@ namespace Invadopodia.Model
         public ImageGroup()
         {
             Rectangles = new ObservableCollection<RectangularSelection>();
+            folderFirst = "\\" + firstKeyword + "\\";
+            folderSecond = "\\" + secondKeyword + "\\";
+        }
+
+        public ImageGroup(string firstFile, string secondFile, int index)
+        {
+            Rectangles = new ObservableCollection<RectangularSelection>();
+            ImageFirst = new BitmapImage(new System.Uri(firstFile));
+            ImageSecond = new BitmapImage(new System.Uri(secondFile));
+            Index = index;
+            folderFirst = "\\" + firstKeyword + "\\";
+            folderSecond = "\\" + secondKeyword + "\\";
         }
 
         private int index;
@@ -70,28 +83,33 @@ namespace Invadopodia.Model
             }
         }
 
-        string folderFirst = "\\actin\\";
-        string folderSecond = "\\gelatin\\";
+        string firstKeyword = "actin";
+        string secondKeyword = "gelatin";
+
+        string folderFirst;
+        string folderSecond;
 
         public void Crop(string folder)
         {
-            CreateOutputFolder(folder);
+            CreateOutputFolders(folder);
             for (int i = 0; i < Rectangles.Count; i++)
             {
-                RectangularSelection rectangle = Rectangles[i];
-                WriteableBitmap first = new WriteableBitmap(ImageFirst);
-                WriteableBitmap second = new WriteableBitmap(ImageSecond);
+                WriteableBitmap first = CropBitmapFromRectangle(ImageFirst, Rectangles[i]);
+                WriteableBitmap second = CropBitmapFromRectangle(ImageSecond, Rectangles[i]);
 
-                WriteableBitmap croppedFirst = first.Crop((int) rectangle.RealX, (int)rectangle.RealY, (int)rectangle.RealWidth, (int)rectangle.RealHeight);
-                WriteableBitmap croppedSecond = second.Crop((int)rectangle.RealX, (int)rectangle.RealY, (int)rectangle.RealWidth, (int)rectangle.RealHeight);
-
-                SaveImage(croppedFirst, folder + folderFirst + Index.ToString() + " " + (i + 1).ToString() + ".tif");
-                SaveImage(croppedSecond, folder + folderSecond + Index.ToString() + " " + (i + 1).ToString() + ".tif");
+                SaveImage(first, String.Concat(folder, folderFirst, Index.ToString(), " ", firstKeyword, " ", (i + 1).ToString(), ".tif") );
+                SaveImage(second, String.Concat(folder, folderSecond, Index.ToString(), " ", secondKeyword, " ", (i + 1).ToString(), ".tif"));
             }
             MessageBox.Show("Crop complete.");
         }
 
-        void SaveImage(BitmapSource image, string filename)
+        private WriteableBitmap CropBitmapFromRectangle(BitmapSource bitmap, RectangularSelection rectangle)
+        {
+            WriteableBitmap writeableBitmap = new WriteableBitmap(bitmap);
+            return writeableBitmap.Crop((int)rectangle.RealX, (int)rectangle.RealY, (int)rectangle.RealWidth, (int)rectangle.RealHeight);
+        }
+
+        private void SaveImage(BitmapSource image, string filename)
         {
             if (filename != string.Empty)
             {
@@ -105,10 +123,29 @@ namespace Invadopodia.Model
             }
         }
 
-        private void CreateOutputFolder(string folder)
+        private void BackupFolders(string folder)
         {
-            Directory.CreateDirectory(folder + folderFirst);
-            Directory.CreateDirectory(folder + folderSecond);
+            string dateString = string.Concat(DateTime.Now.Day.ToString(), "-", CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(DateTime.Now.Month), "-", DateTime.Now.Year.ToString(), " ", DateTime.Now.Hour.ToString(), "h-", DateTime.Now.Minute.ToString(), "m-", DateTime.Now.Second.ToString() + "s");
+            BackupFolder(folder + folderFirst, folder + "\\" + dateString + " " + firstKeyword);
+            BackupFolder(folder + folderSecond, folder + "\\" + dateString + " " + secondKeyword);
+        }
+
+        private void BackupFolder(string folder, string newFolder)
+        {
+            if (Directory.Exists(folder))
+                Directory.Move(folder, newFolder);
+        }
+
+        private void CreateOutputFolder(string folder, string subfolder)
+        {
+            Directory.CreateDirectory(folder + subfolder);
+        }
+
+        private void CreateOutputFolders(string folder)
+        {
+            BackupFolders(folder);
+            CreateOutputFolder(folder, folderFirst);
+            CreateOutputFolder(folder, folderSecond);
         }
 
     }

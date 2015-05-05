@@ -24,8 +24,8 @@ namespace Invadopodia.ViewModel
             else
             {
                 MessengerInstance.Register<ImageGroup>(this, g => SelectedImageGroup = g);
-                CanvasWidth = 696;
-                canvasHeight = 520;
+                CanvasSize.Width = 348;
+                CanvasSize.Height = 260;
             }
         }
 
@@ -79,40 +79,39 @@ namespace Invadopodia.ViewModel
                 SelectedRectangle.X = (FirstPoint.X < mousePoint.X) ? FirstPoint.X : mousePoint.X;
                 SelectedRectangle.Y = (FirstPoint.Y < mousePoint.Y) ? FirstPoint.Y : mousePoint.Y;
                 SelectedRectangle.Width = (FirstPoint.X < mousePoint.X) ? (mousePoint.X - FirstPoint.X) : (FirstPoint.X - mousePoint.X);
-                //SelectedRectangle.Height = (FirstPoint.Y < mousePoint.Y) ? (mousePoint.Y - FirstPoint.Y) : (FirstPoint.Y - mousePoint.Y);
                 SelectedRectangle.Height = SelectedRectangle.Width;
 
-                SelectedRectangle.RealX = SelectedRectangle.X * (SelectedImageGroup.ImageFirst.PixelWidth / CanvasWidth);
-                SelectedRectangle.RealY = SelectedRectangle.Y * (SelectedImageGroup.ImageFirst.PixelHeight / canvasHeight);
-                SelectedRectangle.RealWidth = SelectedRectangle.Width * (SelectedImageGroup.ImageFirst.PixelWidth / CanvasWidth);
-                SelectedRectangle.RealHeight = SelectedRectangle.Height * (SelectedImageGroup.ImageFirst.PixelHeight / canvasHeight);
+                SelectedRectangle.RealX = SelectedRectangle.X * (SelectedImageGroup.ImageFirst.PixelWidth / CanvasSize.Width);
+                SelectedRectangle.RealY = SelectedRectangle.Y * (SelectedImageGroup.ImageFirst.PixelHeight / CanvasSize.Height);
+                SelectedRectangle.RealWidth = SelectedRectangle.Width * (SelectedImageGroup.ImageFirst.PixelWidth / CanvasSize.Width);
+                SelectedRectangle.RealHeight = SelectedRectangle.RealWidth;
             }
         }
 
-        private int canvasWidth;
-        public int CanvasWidth
+        private Size CanvasSize;
+        private void AdjustRectanglePosition(RectangularSelection rectangle, Size newCanvasSize, Size oldCanvasSize)
         {
-            get
-            {
-                return canvasWidth;
-            }
-            set
-            {
-                Set(() => CanvasWidth, ref canvasWidth, value);
-            }
+            double factorX = newCanvasSize.Width / oldCanvasSize.Width;
+            double factorY = newCanvasSize.Height / oldCanvasSize.Height;
+            rectangle.X *= factorX;
+            rectangle.Y *= factorY;
+            rectangle.Width *= factorX;
+            rectangle.Height *= factorY;
         }
 
-        private int canvasHeight;
-        public int CanvasHeight
+        private RelayCommand<SizeChangedEventArgs> resizeCanvasCommand;
+        public RelayCommand<SizeChangedEventArgs> ResizeCanvasCommand
         {
             get
             {
-                return canvasHeight;
+                return resizeCanvasCommand ?? (resizeCanvasCommand = new RelayCommand<SizeChangedEventArgs>(ExecuteResizeCanvasCommand));
             }
-            set
-            {
-                Set(() => CanvasHeight, ref canvasHeight, value);
-            }
+        }
+        private void ExecuteResizeCanvasCommand(SizeChangedEventArgs e)
+        {
+            CanvasSize = e.NewSize;
+            foreach (RectangularSelection rectangle in SelectedImageGroup.Rectangles)
+                AdjustRectanglePosition(rectangle, e.NewSize, e.PreviousSize);
         }
         
         private RectangularSelection selectedRectangle;

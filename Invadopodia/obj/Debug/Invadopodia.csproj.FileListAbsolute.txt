@@ -15,8 +15,6 @@ G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\bin\Debug\GalaSoft.MvvmL
 G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
 G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\bin\Debug\Microsoft.Practices.ServiceLocation.xml
 G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\obj\Debug\Invadopodia.csprojResolveAssemblyReference.cache
-G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\obj\Debug\MainWindow.baml
-G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\obj\Debug\MainWindow.g.cs
 G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\obj\Debug\App.g.cs
 G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\obj\Debug\GeneratedInternalTypeHelper.g.cs
 G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\obj\Debug\Invadopodia_MarkupCompile.cache
@@ -36,3 +34,6 @@ G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\bin\Debug\Invadopodia.ex
 G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\bin\Debug\Invadopodia.application
 G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\obj\Debug\Invadopodia.exe.manifest
 G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\obj\Debug\Invadopodia.application
+G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\bin\Debug\WPFFolderBrowser.dll
+G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\obj\Debug\View\MainWindow.baml
+G:\Documents\GitHub\Invadopodia\Invadopodia\Invadopodia\obj\Debug\View\MainWindow.g.cs
