@@ -27,12 +27,14 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+        
         <Button Grid.Row="0" Content="Open Folder" Command="{Binding OpenFolderCommand}" />
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="2">
             <Button Content="Crop" Width="100" Command="{Binding CropCommand}" />
             <Button Content="Undo" Width="100" Command="{Binding UndoCommand}" Margin="25,0" />
         </StackPanel>
         <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ImageFolder}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="25,0" />
+        
         <ListView Grid.Row="1" Grid.ColumnSpan="3" SelectedItem="{Binding SelectedImageGroup}" ItemsSource="{Binding ImageList}" ItemTemplate="{StaticResource ImageListItemTemplate}">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>

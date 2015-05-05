@@ -24,8 +24,8 @@ namespace Invadopodia.Model
         public ImageGroup(string firstFile, string secondFile, int index)
         {
             Rectangles = new ObservableCollection<RectangularSelection>();
-            ImageFirst = new BitmapImage(new System.Uri(firstFile));
-            ImageSecond = new BitmapImage(new System.Uri(secondFile));
+            ImageFirst = new WriteableBitmap(new BitmapImage(new System.Uri(firstFile)));
+            ImageSecond = new WriteableBitmap(new BitmapImage(new System.Uri(secondFile)));
             Index = index;
             folderFirst = "\\" + firstKeyword + "\\";
             folderSecond = "\\" + secondKeyword + "\\";
@@ -44,8 +44,8 @@ namespace Invadopodia.Model
             }
         }
 
-        private BitmapImage imageFirst;
-        public BitmapImage ImageFirst
+        private WriteableBitmap imageFirst;
+        public WriteableBitmap ImageFirst
         {
             get
             {
@@ -57,8 +57,8 @@ namespace Invadopodia.Model
             }
         }
 
-        private BitmapImage imageSecond;
-        public BitmapImage ImageSecond
+        private WriteableBitmap imageSecond;
+        public WriteableBitmap ImageSecond
         {
             get
             {
@@ -106,7 +106,8 @@ namespace Invadopodia.Model
         private WriteableBitmap CropBitmapFromRectangle(BitmapSource bitmap, RectangularSelection rectangle)
         {
             WriteableBitmap writeableBitmap = new WriteableBitmap(bitmap);
-            return writeableBitmap.Crop((int)rectangle.RealX, (int)rectangle.RealY, (int)rectangle.RealWidth, (int)rectangle.RealHeight);
+            writeableBitmap = writeableBitmap.Crop((int)rectangle.RealX, (int)rectangle.RealY, (int)rectangle.RealWidth, (int)rectangle.RealHeight);
+            return writeableBitmap.Gray();
         }
 
         private void SaveImage(BitmapSource image, string filename)
