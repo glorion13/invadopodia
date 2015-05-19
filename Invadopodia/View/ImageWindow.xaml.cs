@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MahApps.Metro.Controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,7 @@ namespace Invadopodia.View
     /// <summary>
     /// Interaction logic for ImageWindow.xaml
     /// </summary>
-    public partial class ImageWindow : Window
+    public partial class ImageWindow : MetroWindow
     {
         public ImageWindow()
         {

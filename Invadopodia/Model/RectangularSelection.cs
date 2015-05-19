@@ -61,7 +61,6 @@ namespace Invadopodia.Model
             }
         }
 
-
         private double height;
         public double Height
         {
@@ -114,7 +113,6 @@ namespace Invadopodia.Model
             }
         }
 
-
         private double realHeight;
         public double RealHeight
         {
@@ -127,6 +125,8 @@ namespace Invadopodia.Model
                 Set(() => RealHeight, ref realHeight, value);
             }
         }
+
+
 
     }
 }

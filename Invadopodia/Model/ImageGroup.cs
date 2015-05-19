@@ -1,7 +1,11 @@
-﻿using GalaSoft.MvvmLight;
+﻿using AForge.Imaging;
+using AForge.Imaging.Filters;
+using GalaSoft.MvvmLight;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -24,11 +28,64 @@ namespace Invadopodia.Model
         public ImageGroup(string firstFile, string secondFile, int index)
         {
             Rectangles = new ObservableCollection<RectangularSelection>();
-            ImageFirst = new WriteableBitmap(new BitmapImage(new System.Uri(firstFile)));
-            ImageSecond = new WriteableBitmap(new BitmapImage(new System.Uri(secondFile)));
             Index = index;
             folderFirst = "\\" + firstKeyword + "\\";
             folderSecond = "\\" + secondKeyword + "\\";
+
+            Grayscale filter = new Grayscale(0.2125, 0.7154, 0.0721);
+
+            OriginalImageFirst = filter.Apply(ConvertBitmapImageToBitmap(new BitmapImage(new System.Uri(firstFile))));
+            OriginalImageSecond = filter.Apply(ConvertBitmapImageToBitmap(new BitmapImage(new System.Uri(secondFile))));
+            ImageFirst = ConvertBitmapToBitmapImage(OriginalImageFirst);
+            ImageSecond = ConvertBitmapToBitmapImage(OriginalImageSecond);
+        }
+
+        private Bitmap ConvertBitmapImageToBitmap(BitmapImage bitmapImage)
+        {
+            using (MemoryStream outStream = new MemoryStream())
+            {
+                BitmapEncoder enc = new BmpBitmapEncoder();
+                enc.Frames.Add(BitmapFrame.Create(bitmapImage));
+                enc.Save(outStream);
+                System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(outStream);
+                return new Bitmap(bitmap);
+            }
+        }
+
+        private BitmapImage ConvertBitmapToBitmapImage(Bitmap bitmap)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            bitmap.Save(memoryStream, ImageFormat.Png);
+            BitmapImage bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            bitmapImage.StreamSource = new MemoryStream(memoryStream.ToArray());
+            bitmapImage.EndInit();
+            return bitmapImage;
+        }
+
+        public struct Gamma
+        {
+            public Gamma(double value)
+            {
+                Value = value;
+            }
+            public double Value;
+        }
+        public struct Contrast
+        {
+            public Contrast(int value)
+            {
+                Value = value;
+            }
+            public int Value;
+        }
+        public struct Brightness
+        {
+            public Brightness(int value)
+            {
+                Value = value;
+            }
+            public int Value;
         }
 
         private int index;
@@ -44,8 +101,8 @@ namespace Invadopodia.Model
             }
         }
 
-        private WriteableBitmap imageFirst;
-        public WriteableBitmap ImageFirst
+        private BitmapImage imageFirst;
+        public BitmapImage ImageFirst
         {
             get
             {
@@ -57,8 +114,8 @@ namespace Invadopodia.Model
             }
         }
 
-        private WriteableBitmap imageSecond;
-        public WriteableBitmap ImageSecond
+        private BitmapImage imageSecond;
+        public BitmapImage ImageSecond
         {
             get
             {
@@ -67,6 +124,32 @@ namespace Invadopodia.Model
             set
             {
                 Set(() => ImageSecond, ref imageSecond, value);
+            }
+        }
+
+        private Bitmap originalImageFirst;
+        public Bitmap OriginalImageFirst
+        {
+            get
+            {
+                return originalImageFirst;
+            }
+            set
+            {
+                Set(() => OriginalImageFirst, ref originalImageFirst, value);
+            }
+        }
+
+        private Bitmap originalImageSecond;
+        public Bitmap OriginalImageSecond
+        {
+            get
+            {
+                return originalImageSecond;
+            }
+            set
+            {
+                Set(() => OriginalImageSecond, ref originalImageSecond, value);
             }
         }
 
@@ -92,25 +175,26 @@ namespace Invadopodia.Model
         public void Crop(string folder)
         {
             CreateOutputFolders(folder);
+            Bitmap unmanagedFirst = ConvertBitmapImageToBitmap(ImageFirst);
+            Bitmap unmanagedSecond = ConvertBitmapImageToBitmap(ImageSecond);
             for (int i = 0; i < Rectangles.Count; i++)
             {
-                WriteableBitmap first = CropBitmapFromRectangle(ImageFirst, Rectangles[i]);
-                WriteableBitmap second = CropBitmapFromRectangle(ImageSecond, Rectangles[i]);
+                Crop filter = new Crop(new Rectangle((int)Rectangles[i].RealX, (int)Rectangles[i].RealY, (int)Rectangles[i].RealWidth, (int)Rectangles[i].RealHeight));
+                Grayscale filter2 = new Grayscale(0.2125, 0.7154, 0.0721);
+                Bitmap first = filter.Apply(unmanagedFirst);
+                Bitmap second = filter.Apply(unmanagedSecond);
+                first = filter2.Apply(first);
+                second = filter2.Apply(second);
 
-                SaveImage(first, String.Concat(folder, folderFirst, Index.ToString(), " ", firstKeyword, " ", (i + 1).ToString(), ".tif") );
-                SaveImage(second, String.Concat(folder, folderSecond, Index.ToString(), " ", secondKeyword, " ", (i + 1).ToString(), ".tif"));
+                first.Save(String.Concat(folder, folderFirst, Index.ToString(), " ", firstKeyword, " ", (i + 1).ToString(), ".tif"), ImageFormat.Tiff);
+                second.Save(String.Concat(folder, folderSecond, Index.ToString(), " ", secondKeyword, " ", (i + 1).ToString(), ".tif"), ImageFormat.Tiff);
+                //SaveImage(first, String.Concat(folder, folderFirst, Index.ToString(), " ", firstKeyword, " ", (i + 1).ToString(), ".tif") );
+                //SaveImage(second, String.Concat(folder, folderSecond, Index.ToString(), " ", secondKeyword, " ", (i + 1).ToString(), ".tif"));
             }
             MessageBox.Show("Crop complete.");
         }
 
-        private WriteableBitmap CropBitmapFromRectangle(BitmapSource bitmap, RectangularSelection rectangle)
-        {
-            WriteableBitmap writeableBitmap = new WriteableBitmap(bitmap);
-            writeableBitmap = writeableBitmap.Crop((int)rectangle.RealX, (int)rectangle.RealY, (int)rectangle.RealWidth, (int)rectangle.RealHeight);
-            return writeableBitmap.Gray();
-        }
-
-        private void SaveImage(BitmapSource image, string filename)
+        /*private void SaveImage(BitmapSource image, string filename)
         {
             if (filename != string.Empty)
             {
@@ -122,7 +206,7 @@ namespace Invadopodia.Model
                     stream.Close();
                 }
             }
-        }
+        }*/
 
         private void BackupFolders(string folder)
         {

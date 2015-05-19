@@ -1,6 +1,8 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using Invadopodia.Model;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -73,7 +75,7 @@ namespace Invadopodia.ViewModel
                 return openFolderCommand ?? (openFolderCommand = new RelayCommand(ExecuteOpenFolderCommand));
             }
         }
-        private void ExecuteOpenFolderCommand()
+        private async void ExecuteOpenFolderCommand()
         {
             WPFFolderBrowserDialog dialog = new WPFFolderBrowserDialog();
             dialog.Title = "Please select a directory.";
@@ -82,7 +84,11 @@ namespace Invadopodia.ViewModel
             if (result == true)
             {
                 ImageFolder = dialog.FileName;
-                LoadImagesFromFolder(ImageFolder);
+                MetroWindow metroWindow = System.Windows.Application.Current.MainWindow as MetroWindow;
+                var controller = await metroWindow.ShowProgressAsync("Please wait...", "Progress message");
+                controller.SetProgress(0);
+                await LoadImagesFromFolder(ImageFolder, controller);
+                await controller.CloseAsync();
             }
         }
 
@@ -117,7 +123,7 @@ namespace Invadopodia.ViewModel
                 SelectedImageGroup.Crop(ImageFolder);
         }
 
-        private void LoadImagesFromFolder(string folder)
+        private async Task LoadImagesFromFolder(string folder, ProgressDialogController controller)
         {
             ImageList.Clear();
             string[] files = Directory.GetFiles(folder, "*.tif");
@@ -133,12 +139,14 @@ namespace Invadopodia.ViewModel
                 }
                 else
                 {
+                    LoadingProgressValue = (double)fileIndex / (double)(files.Length - 1);
+                    controller.SetProgress((double)fileIndex / (double)(files.Length - 1));
                     ImageGroup newImageGroup = new ImageGroup(firstFile, secondFile, index);
                     ImageList.Add(newImageGroup);
                 }
             }
             if (ImageList.Count > 0)
-                SelectedImageGroup = ImageList[0];   
+                SelectedImageGroup = ImageList[0];
         }
 
         private ImageGroup selectedImageGroup;
@@ -152,6 +160,32 @@ namespace Invadopodia.ViewModel
             {
                 Set(() => SelectedImageGroup, ref selectedImageGroup, value);
                 MessengerInstance.Send<ImageGroup>(SelectedImageGroup);
+            }
+        }
+
+        private double loadingProgressValue;
+        public double LoadingProgressValue
+        {
+            get
+            {
+                return loadingProgressValue;
+            }
+            set
+            {
+                Set(() => LoadingProgressValue, ref loadingProgressValue, value);
+            }
+        }
+
+        private bool isLoadingBarVisible = false;
+        public bool IsLoadingBarVisible
+        {
+            get
+            {
+                return isLoadingBarVisible;
+            }
+            set
+            {
+                Set(() => IsLoadingBarVisible, ref isLoadingBarVisible, value);
             }
         }
 
