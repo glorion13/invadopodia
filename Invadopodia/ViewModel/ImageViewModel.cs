@@ -28,10 +28,24 @@ namespace Invadopodia.ViewModel
             else
             {
                 MessengerInstance.Register<ImageGroup>(this, g => SelectedImageGroup = g);
+                MessengerInstance.Register<bool>(this, b => IsSquareSelection = b);
                 CanvasSize.Width = 348;
                 CanvasSize.Height = 260;
                 GammaValueFirst = 1.0;
                 GammaValueSecond = 1.0;
+            }
+        }
+
+        private bool isSquareSelection;
+        public bool IsSquareSelection
+        {
+            get
+            {
+                return isSquareSelection;
+            }
+            set
+            {
+                Set(() => IsSquareSelection, ref isSquareSelection, value);
             }
         }
 
@@ -205,12 +219,18 @@ namespace Invadopodia.ViewModel
                 SelectedRectangle.X = (FirstPoint.X < mousePoint.X) ? FirstPoint.X : mousePoint.X;
                 SelectedRectangle.Y = (FirstPoint.Y < mousePoint.Y) ? FirstPoint.Y : mousePoint.Y;
                 SelectedRectangle.Width = (FirstPoint.X < mousePoint.X) ? (mousePoint.X - FirstPoint.X) : (FirstPoint.X - mousePoint.X);
-                SelectedRectangle.Height = SelectedRectangle.Width;
+                if (IsSquareSelection)
+                    SelectedRectangle.Height = SelectedRectangle.Width;
+                else
+                    SelectedRectangle.Height = (FirstPoint.Y < mousePoint.Y) ? (mousePoint.Y - FirstPoint.Y) : (FirstPoint.Y - mousePoint.Y);
 
                 SelectedRectangle.RealX = SelectedRectangle.X * (SelectedImageGroup.ImageFirst.PixelWidth / CanvasSize.Width);
                 SelectedRectangle.RealY = SelectedRectangle.Y * (SelectedImageGroup.ImageFirst.PixelHeight / CanvasSize.Height);
                 SelectedRectangle.RealWidth = SelectedRectangle.Width * (SelectedImageGroup.ImageFirst.PixelWidth / CanvasSize.Width);
-                SelectedRectangle.RealHeight = SelectedRectangle.RealWidth;
+                if (IsSquareSelection)
+                    SelectedRectangle.RealHeight = SelectedRectangle.RealWidth;
+                else
+                    SelectedRectangle.RealHeight = SelectedRectangle.Height * (SelectedImageGroup.ImageFirst.PixelHeight / CanvasSize.Height);
             }
         }
 

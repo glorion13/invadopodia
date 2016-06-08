@@ -13,23 +13,8 @@ using WPFFolderBrowser;
 
 namespace Invadopodia.ViewModel
 {
-    /// <summary>
-    /// This class contains properties that the main View can data bind to.
-    /// <para>
-    /// Use the <strong>mvvminpc</strong> snippet to add bindable properties to this ViewModel.
-    /// </para>
-    /// <para>
-    /// You can also use Blend to data bind with the tool's support.
-    /// </para>
-    /// <para>
-    /// See http://www.galasoft.ch/mvvm
-    /// </para>
-    /// </summary>
     public class MainViewModel : ViewModelBase
     {
-        /// <summary>
-        /// Initializes a new instance of the MainViewModel class.
-        /// </summary>
         public MainViewModel()
         {
             ImageList = new ObservableCollection<ImageGroup>();
@@ -38,6 +23,20 @@ namespace Invadopodia.ViewModel
             }
             else
             {
+            }
+        }
+
+        private bool isSquareSelection;
+        public bool IsSquareSelection
+        {
+            get
+            {
+                return isSquareSelection;
+            }
+            set
+            {
+                Set(() => IsSquareSelection, ref isSquareSelection, value);
+                MessengerInstance.Send(IsSquareSelection);
             }
         }
 
@@ -129,8 +128,8 @@ namespace Invadopodia.ViewModel
             string[] files = Directory.GetFiles(folder, "*.tif");
             for (int fileIndex = 0; fileIndex < files.Length - 1; fileIndex += 2)
             {
-                string firstFile = files[fileIndex].Contains("actin") ? files[fileIndex] : (files[fileIndex + 1].Contains("actin") ? files[fileIndex + 1] : null);
-                string secondFile = files[fileIndex].Contains("gelatin") ? files[fileIndex] : (files[fileIndex + 1].Contains("gelatin") ? files[fileIndex + 1] : null);
+                string firstFile = files[fileIndex].Contains("left") ? files[fileIndex] : (files[fileIndex + 1].Contains("left") ? files[fileIndex + 1] : null);
+                string secondFile = files[fileIndex].Contains("right") ? files[fileIndex] : (files[fileIndex + 1].Contains("right") ? files[fileIndex + 1] : null);
                 int index = (fileIndex / 2) + 1;
                 if (firstFile == null || secondFile == null)
                 {

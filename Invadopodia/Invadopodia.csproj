@@ -51,7 +51,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>7E2E92F8B017D9590A0EBCDF561DFD111D38A600</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>3B0C8109502101BBFE9CFE92C3722F96FBDF0DA9</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>Invadopodia_TemporaryKey.pfx</ManifestKeyFile>
@@ -163,6 +163,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="Invadopodia_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

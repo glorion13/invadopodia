@@ -8,7 +8,7 @@
         SaveWindowPosition="True"
         ResizeMode="NoResize"
         EnableDWMDropShadow="True"
-        Title="Invadopodia" Height="150" Width="600">
+        Title="Invadopodia" Height="150" Width="768">
 
     <MetroControls:MetroWindow.Resources>
         <ResourceDictionary>
@@ -38,7 +38,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="200" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
@@ -46,6 +46,7 @@
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="2">
             <Button Content="Crop" Width="100" Command="{Binding CropCommand}" />
             <Button Content="Undo" Width="100" Command="{Binding UndoCommand}" Margin="25,0" />
+            <CheckBox Content="Square selection" Width="150" IsChecked="{Binding IsSquareSelection, Mode=TwoWay}" Margin="25,0" />
         </StackPanel>
         <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ImageFolder}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="25,0" />
         
