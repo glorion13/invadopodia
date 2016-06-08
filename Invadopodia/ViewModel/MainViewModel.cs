@@ -4,7 +4,9 @@ using Invadopodia.Model;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
+using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -128,12 +130,23 @@ namespace Invadopodia.ViewModel
             string[] files = Directory.GetFiles(folder, "*.tif");
             for (int fileIndex = 0; fileIndex < files.Length - 1; fileIndex += 2)
             {
-                string firstFile = files[fileIndex].Contains("left") ? files[fileIndex] : (files[fileIndex + 1].Contains("left") ? files[fileIndex + 1] : null);
-                string secondFile = files[fileIndex].Contains("right") ? files[fileIndex] : (files[fileIndex + 1].Contains("right") ? files[fileIndex + 1] : null);
+                string firstFile = null;
+                string secondFile = null;
+                if (files[fileIndex].IndexOf("actin", StringComparison.OrdinalIgnoreCase) >= 0)
+                    firstFile = files[fileIndex];
+                else if (files[fileIndex + 1].IndexOf("actin", StringComparison.OrdinalIgnoreCase) >= 0)
+                    firstFile = files[fileIndex + 1];
+
+                if (files[fileIndex].IndexOf("pla", StringComparison.OrdinalIgnoreCase) >= 0)
+                    secondFile = files[fileIndex];
+                else if (files[fileIndex + 1].IndexOf("pla", StringComparison.OrdinalIgnoreCase) >= 0)
+                    secondFile = files[fileIndex + 1];
+                //string firstFile = files[fileIndex].Contains("actin") ? files[fileIndex] : (files[fileIndex + 1].Contains("actin") ? files[fileIndex + 1] : null);
+                //string secondFile = files[fileIndex].Contains("pla") ? files[fileIndex] : (files[fileIndex + 1].Contains("pla") ? files[fileIndex + 1] : null);
                 int index = (fileIndex / 2) + 1;
                 if (firstFile == null || secondFile == null)
                 {
-                    MessageBox.Show("The image structure in the selected folder does not match the requirements.");
+                    MessageBox.Show("The image structure in the selected folder does not match the requirements. Make sure no images are open in another program.");
                     break;
                 }
                 else

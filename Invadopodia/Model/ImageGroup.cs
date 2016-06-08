@@ -166,8 +166,8 @@ namespace Invadopodia.Model
             }
         }
 
-        string firstKeyword = "left";
-        string secondKeyword = "right";
+        string firstKeyword = "actin";
+        string secondKeyword = "pla";
 
         string folderFirst;
         string folderSecond;
