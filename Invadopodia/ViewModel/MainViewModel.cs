@@ -5,9 +5,11 @@ using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -85,11 +87,7 @@ namespace Invadopodia.ViewModel
             if (result == true)
             {
                 ImageFolder = dialog.FileName;
-                MetroWindow metroWindow = System.Windows.Application.Current.MainWindow as MetroWindow;
-                var controller = await metroWindow.ShowProgressAsync("Please wait...", "Progress message");
-                controller.SetProgress(0);
-                await LoadImagesFromFolder(ImageFolder, controller);
-                await controller.CloseAsync();
+                LoadImagesFromFolder(ImageFolder);
             }
         }
 
@@ -124,35 +122,40 @@ namespace Invadopodia.ViewModel
                 SelectedImageGroup.Crop(ImageFolder);
         }
 
-        private async Task LoadImagesFromFolder(string folder, ProgressDialogController controller)
+        private void LoadImagesFromFolder(string folder)
         {
             ImageList.Clear();
-            string[] files = Directory.GetFiles(folder, "*.tif");
+            DirectoryInfo directoryInfo = new DirectoryInfo(folder);
+            FileInfo[] files = directoryInfo.GetFiles("*.tif", SearchOption.TopDirectoryOnly);
+            files = files.OrderBy(f => f.Name).ToArray();
             for (int fileIndex = 0; fileIndex < files.Length - 1; fileIndex += 2)
             {
                 string firstFile = null;
                 string secondFile = null;
-                if (files[fileIndex].IndexOf("actin", StringComparison.OrdinalIgnoreCase) >= 0)
-                    firstFile = files[fileIndex];
-                else if (files[fileIndex + 1].IndexOf("actin", StringComparison.OrdinalIgnoreCase) >= 0)
-                    firstFile = files[fileIndex + 1];
 
-                if (files[fileIndex].IndexOf("pla", StringComparison.OrdinalIgnoreCase) >= 0)
-                    secondFile = files[fileIndex];
-                else if (files[fileIndex + 1].IndexOf("pla", StringComparison.OrdinalIgnoreCase) >= 0)
-                    secondFile = files[fileIndex + 1];
+                if (files[fileIndex].Name.IndexOf("actin", StringComparison.OrdinalIgnoreCase) >= 0)
+                    firstFile = files[fileIndex].FullName;
+                else if (files[fileIndex + 1].Name.IndexOf("actin", StringComparison.OrdinalIgnoreCase) >= 0)
+                    firstFile = files[fileIndex + 1].FullName;
+                else
+                    firstFile = null;
+
+                if (files[fileIndex].Name.IndexOf("pla", StringComparison.OrdinalIgnoreCase) >= 0)
+                    secondFile = files[fileIndex].FullName;
+                else if (files[fileIndex + 1].Name.IndexOf("pla", StringComparison.OrdinalIgnoreCase) >= 0)
+                    secondFile = files[fileIndex + 1].FullName;
+                else
+                    secondFile = null;
                 //string firstFile = files[fileIndex].Contains("actin") ? files[fileIndex] : (files[fileIndex + 1].Contains("actin") ? files[fileIndex + 1] : null);
                 //string secondFile = files[fileIndex].Contains("pla") ? files[fileIndex] : (files[fileIndex + 1].Contains("pla") ? files[fileIndex + 1] : null);
                 int index = (fileIndex / 2) + 1;
                 if (firstFile == null || secondFile == null)
                 {
-                    MessageBox.Show("The image structure in the selected folder does not match the requirements. Make sure no images are open in another program.");
+                    MessageBox.Show("The image structure in the selected folder does not match the requirements or the images are open in another program.");
                     break;
                 }
                 else
                 {
-                    LoadingProgressValue = (double)fileIndex / (double)(files.Length - 1);
-                    controller.SetProgress((double)fileIndex / (double)(files.Length - 1));
                     ImageGroup newImageGroup = new ImageGroup(firstFile, secondFile, index);
                     ImageList.Add(newImageGroup);
                 }
