@@ -174,24 +174,35 @@ namespace Invadopodia.Model
 
         public void Crop(string folder)
         {
-            CreateOutputFolders(folder);
-            Bitmap unmanagedFirst = ConvertBitmapImageToBitmap(ImageFirst);
-            Bitmap unmanagedSecond = ConvertBitmapImageToBitmap(ImageSecond);
-            for (int i = 0; i < Rectangles.Count; i++)
+            try
             {
-                Crop filter = new Crop(new Rectangle((int)Rectangles[i].RealX, (int)Rectangles[i].RealY, (int)Rectangles[i].RealWidth, (int)Rectangles[i].RealHeight));
-                Grayscale filter2 = new Grayscale(0.2125, 0.7154, 0.0721);
-                Bitmap first = filter.Apply(unmanagedFirst);
-                Bitmap second = filter.Apply(unmanagedSecond);
-                first = filter2.Apply(first);
-                second = filter2.Apply(second);
+                CreateOutputFolders(folder);
+                Bitmap unmanagedFirst = ConvertBitmapImageToBitmap(ImageFirst);
+                Bitmap unmanagedSecond = ConvertBitmapImageToBitmap(ImageSecond);
+                for (int i = 0; i < Rectangles.Count; i++)
+                {
+                    if ((Rectangles[i].RealWidth > 0.0) && (Rectangles[i].RealHeight) > 0.0)
+                    {
+                        Crop filter = new Crop(new Rectangle((int)Rectangles[i].RealX, (int)Rectangles[i].RealY, (int)Rectangles[i].RealWidth, (int)Rectangles[i].RealHeight));
+                        MessageBox.Show($"{Rectangles[i].RealX} kai {Rectangles[i].RealWidth}");
+                        //Grayscale filter2 = new Grayscale(0.2125, 0.7154, 0.0721);
+                        Bitmap first = filter.Apply(unmanagedFirst);
+                        Bitmap second = filter.Apply(unmanagedSecond);
+                        //first = filter2.Apply(first);
+                        //second = filter2.Apply(second);
 
-                first.Save(String.Concat(folder, folderFirst, Index.ToString(), " ", firstKeyword, " ", (i + 1).ToString(), ".tif"), ImageFormat.Tiff);
-                second.Save(String.Concat(folder, folderSecond, Index.ToString(), " ", secondKeyword, " ", (i + 1).ToString(), ".tif"), ImageFormat.Tiff);
-                //SaveImage(first, String.Concat(folder, folderFirst, Index.ToString(), " ", firstKeyword, " ", (i + 1).ToString(), ".tif") );
-                //SaveImage(second, String.Concat(folder, folderSecond, Index.ToString(), " ", secondKeyword, " ", (i + 1).ToString(), ".tif"));
+                        first.Save($"{folder}{folderFirst}{Index} {firstKeyword} {i + 1}.tif", ImageFormat.Tiff);
+                        second.Save($"{folder}{folderSecond}{Index} {secondKeyword} {i + 1}.tif", ImageFormat.Tiff);
+                        //SaveImage(first, String.Concat(folder, folderFirst, Index.ToString(), " ", firstKeyword, " ", (i + 1).ToString(), ".tif") );
+                        //SaveImage(second, String.Concat(folder, folderSecond, Index.ToString(), " ", secondKeyword, " ", (i + 1).ToString(), ".tif"));
+                    }
+                }
+                MessageBox.Show("Crop complete.");
             }
-            MessageBox.Show("Crop complete.");
+            catch
+            {
+                MessageBox.Show("Error when cropping.");
+            }
         }
 
         /*private void SaveImage(BitmapSource image, string filename)
@@ -228,7 +239,7 @@ namespace Invadopodia.Model
 
         private void CreateOutputFolders(string folder)
         {
-            BackupFolders(folder);
+            //BackupFolders(folder);
             CreateOutputFolder(folder, folderFirst);
             CreateOutputFolder(folder, folderSecond);
         }

@@ -52,10 +52,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>3B0C8109502101BBFE9CFE92C3722F96FBDF0DA9</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>4F3C4D0F7CC34B79878BB462CF064536A6CF5B81</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>Invadopodia_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>
+    </ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
